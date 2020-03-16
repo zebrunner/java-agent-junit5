@@ -89,7 +89,7 @@ public class JUnit5Adapter {
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }
-            TestStartDescriptor testStartDescriptor = new TestStartDescriptor(testName, startedAt, klass, method);
+            TestStartDescriptor testStartDescriptor = new TestStartDescriptor(uuid, testName, startedAt, klass, method);
             registrar.startTest(uuid, testStartDescriptor);
         }
     }
