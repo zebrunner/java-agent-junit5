@@ -21,10 +21,10 @@ public class RerunCondition implements ExecutionCondition {
 
     @Override
     public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-        return RerunContextHolder.isRerun() ? processRerun(context) : ENABLED;
+        return RerunContextHolder.isRerun() ? evaluateContext(context) : ENABLED;
     }
 
-    private static ConditionEvaluationResult processRerun(ExtensionContext context) {
+    private static ConditionEvaluationResult evaluateContext(ExtensionContext context) {
         boolean enabled;
         String reason;
 
@@ -43,24 +43,28 @@ public class RerunCondition implements ExecutionCondition {
     }
 
     private static boolean isTestToRerun(ExtensionContext context) {
-        List<TestDTO> tests = RerunContextHolder.getTests();
-        Predicate<TestDTO> predicateToRerun;
-
         List<UniqueId.Segment> segments = UniqueId.parse(context.getUniqueId()).getSegments();
         boolean testFactory = SegmentResolver.isTestFactory(segments);
-        if (testFactory) {
-            predicateToRerun = test -> {
-                List<UniqueId.Segment> testUuidSegments = UniqueId.parse(test.getUuid()).getSegments();
-                boolean isDynamic = SegmentResolver.isDynamic(testUuidSegments);
-                return isDynamic
-                        && test.getClassName().equals(context.getRequiredTestClass().getName())
-                        && test.getMethodName().equals(context.getRequiredTestMethod().getName());
-            };
-        } else {
-            predicateToRerun = test -> context.getUniqueId().equals(test.getUuid());
-        }
+
+        Predicate<TestDTO> predicateToRerun = testFactory ? dynamicTestNeedRerun(context) : plainTestNeedRerun(context);
+
+        List<TestDTO> tests = RerunContextHolder.getTests();
         return tests.stream()
                     .anyMatch(predicateToRerun);
+    }
+
+    private static Predicate<TestDTO> dynamicTestNeedRerun(ExtensionContext context) {
+        return test -> {
+            List<UniqueId.Segment> testUuidSegments = UniqueId.parse(test.getUuid()).getSegments();
+            boolean isDynamic = SegmentResolver.isDynamic(testUuidSegments);
+            return isDynamic
+                    && test.getClassName().equals(context.getRequiredTestClass().getName())
+                    && test.getMethodName().equals(context.getRequiredTestMethod().getName());
+        };
+    }
+
+    private static Predicate<TestDTO> plainTestNeedRerun(ExtensionContext context) {
+        return test -> context.getUniqueId().equals(test.getUuid());
     }
 
     private static boolean isMethodContext(ExtensionContext context) {
