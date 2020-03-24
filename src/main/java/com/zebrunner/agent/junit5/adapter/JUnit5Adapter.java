@@ -6,6 +6,7 @@ import com.zebrunner.agent.core.registrar.TestRunFinishDescriptor;
 import com.zebrunner.agent.core.registrar.TestRunRegistrar;
 import com.zebrunner.agent.core.registrar.TestRunStartDescriptor;
 import com.zebrunner.agent.core.registrar.TestStartDescriptor;
+import com.zebrunner.agent.junit5.core.SegmentResolver;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.MethodSource;
@@ -25,8 +26,6 @@ import java.util.function.Function;
 public class JUnit5Adapter {
 
     private static final String CLASS = "class";
-    private static final String DYNAMIC_TEST = "dynamic-test";
-    private static final String PARAMETERIZED_TEST = "test-template-invocation";
 
     private static final TestRunRegistrar registrar = TestRunRegistrar.registrar();
 
@@ -51,8 +50,8 @@ public class JUnit5Adapter {
             String uuid = testIdentifier.getUniqueId();
             List<UniqueId.Segment> idSegments = UniqueId.parse(uuid).getSegments();
             MethodSource source = (MethodSource) testIdentifier.getSource().get(); // additional validation here?
-            boolean dynamic = containsSegment(DYNAMIC_TEST, idSegments);
-            boolean parameterized = containsSegment(PARAMETERIZED_TEST, idSegments);
+            boolean dynamic = SegmentResolver.isDynamic(idSegments);
+            boolean parameterized = SegmentResolver.isParameterizedTest(idSegments);
             String testName = buildTestName(testIdentifier, dynamic || parameterized);
 
 //            test.setUuid(uuid);
@@ -160,18 +159,6 @@ public class JUnit5Adapter {
             testName = ((MethodSource) testIdentifier.getSource().get()).getMethodName();
         }
         return testName;
-    }
-
-    private String getSegmentValue(String type, List<UniqueId.Segment> segments) {
-        return segments.stream()
-                       .filter(segment -> segment.getType().equals(type))
-                       .map(UniqueId.Segment::getValue)
-                       .findAny()
-                       .orElse(null);
-    }
-
-    private boolean containsSegment(String type, List<UniqueId.Segment> segments) {
-        return segments.stream().anyMatch(segment -> segment.getType().equals(type));
     }
 
     private Class<?> getClassForName(String className) {

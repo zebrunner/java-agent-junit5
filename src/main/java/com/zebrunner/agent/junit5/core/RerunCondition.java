@@ -5,8 +5,10 @@ import com.zebrunner.agent.core.rest.domain.TestDTO;
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.engine.UniqueId;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public class RerunCondition implements ExecutionCondition {
 
@@ -42,8 +44,23 @@ public class RerunCondition implements ExecutionCondition {
 
     private static boolean isTestToRerun(ExtensionContext context) {
         List<TestDTO> tests = RerunContextHolder.getTests();
+        Predicate<TestDTO> predicateToRerun;
+
+        List<UniqueId.Segment> segments = UniqueId.parse(context.getUniqueId()).getSegments();
+        boolean testFactory = SegmentResolver.isTestFactory(segments);
+        if (testFactory) {
+            predicateToRerun = test -> {
+                List<UniqueId.Segment> testUuidSegments = UniqueId.parse(test.getUuid()).getSegments();
+                boolean isDynamic = SegmentResolver.isDynamic(testUuidSegments);
+                return isDynamic
+                        && test.getClassName().equals(context.getRequiredTestClass().getName())
+                        && test.getMethodName().equals(context.getRequiredTestMethod().getName());
+            };
+        } else {
+            predicateToRerun = test -> context.getUniqueId().equals(test.getUuid());
+        }
         return tests.stream()
-                    .anyMatch(test -> context.getUniqueId().equals(test.getUuid()));
+                    .anyMatch(predicateToRerun);
     }
 
     private static boolean isMethodContext(ExtensionContext context) {
