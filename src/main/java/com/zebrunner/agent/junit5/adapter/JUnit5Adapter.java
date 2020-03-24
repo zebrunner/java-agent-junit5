@@ -28,7 +28,7 @@ public class JUnit5Adapter {
     private static final String DYNAMIC_TEST = "dynamic-test";
     private static final String PARAMETERIZED_TEST = "test-template-invocation";
 
-    private static final TestRunRegistrar registrar = TestRunRegistrar.stdoutRegistrar();
+    private static final TestRunRegistrar registrar = TestRunRegistrar.registrar();
 
     public void registerRunStart(TestPlan testPlan) {
 //        System.out.println(Thread.currentThread().getName());
