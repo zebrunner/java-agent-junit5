@@ -97,9 +97,9 @@ public class JUnit5Adapter {
     public void registerTestFinish(TestIdentifier testIdentifier, TestExecutionResult result) {
         if (testIdentifier.isTest()) {
             OffsetDateTime endedAt = OffsetDateTime.now();
-            String uid = testIdentifier.getUniqueId();
+            String uuid = testIdentifier.getUniqueId();
 
-            UniqueId uniqueId = UniqueId.parse(uid);
+            UniqueId uniqueId = UniqueId.parse(uuid);
             List<UniqueId.Segment> idSegments = uniqueId.getSegments();
 
 //            Test test = new JUnit5Test();
@@ -129,7 +129,7 @@ public class JUnit5Adapter {
             }
 
             TestFinishDescriptor testFinishDescriptor = new TestFinishDescriptor(resultStatus, endedAt, message);
-            registrar.finishTest(uid, testFinishDescriptor);
+            registrar.finishTest(uuid, testFinishDescriptor);
         }
     }
 
