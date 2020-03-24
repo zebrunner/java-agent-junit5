@@ -147,6 +147,7 @@ public class JUnit5Adapter {
 
             TestFinishDescriptor result = new TestFinishDescriptor(Status.SKIPPED, endedAt, reason);
 
+            // TODO: 3/24/20 prevent test finish registration if test is disabled 
             registrar.finishTest(testIdentifier.getUniqueId(), result);
         }
     }
