@@ -11,10 +11,13 @@ repositories {
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots/"
     }
+    maven {
+        url "https://nexus.zebrunner.dev/repository/maven-snapshots/"
+    }
 }
 
 dependencies {
-    implementation("com.zebrunner:agent-core:1.0.1.42-SNAPSHOT")
+    implementation("com.zebrunner:agent-core:1.1.0.66-SNAPSHOT")
 
     implementation("org.junit.jupiter:junit-jupiter-api:5.6.1")
     implementation("org.junit.jupiter:junit-jupiter-engine:5.6.1")
