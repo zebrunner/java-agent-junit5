@@ -1,0 +1,30 @@
+plugins {
+    id "java-library"
+}
+
+group = 'com.zebrunner'
+version = "${version != 'unspecified' ? version : '1.0-SNAPSHOT'}"
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+    maven {
+        url "https://nexus.zebrunner.dev/repository/maven-snapshots/"
+    }
+}
+
+dependencies {
+    api("com.zebrunner:agent-core:1.1.0.71-SNAPSHOT")
+
+    implementation("org.junit.jupiter:junit-jupiter-api:5.6.1")
+    implementation("org.junit.jupiter:junit-jupiter-engine:5.6.1")
+    implementation("org.junit.platform:junit-platform-launcher:1.5.2")
+
+    annotationProcessor("org.projectlombok:lombok:1.18.10")
+    compileOnly("org.projectlombok:lombok:1.18.10")
+}
+
+apply from: 'publish-maven.gradle'

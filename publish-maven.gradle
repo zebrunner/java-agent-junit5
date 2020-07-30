@@ -1,0 +1,76 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier.set('javadoc')
+    from javadoc.destinationDir
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact tasks.sourcesJar
+            artifact tasks.javadocJar
+
+            pom {
+                name = 'Zebrunner JUnit 5 agent'
+                url = 'https://github.com/zebrunner/java-agent-junit5'
+                organization {
+                    name = 'Zebrunner'
+                    url = 'https://zebrunner.com'
+                }
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'nsidorevich'
+                        name = 'Nikita Sidorevich'
+                        email = 'nsidorevich@zebrunner.com'
+                    }
+                    developer {
+                        id = 'brutskov'
+                        name = 'Bogdan Rutskov'
+                        email = 'brutskov@zebrunner.com'
+                    }
+                }
+                scm {
+                    connection = 'https://github.com/zebrunner/java-agent-junit5.git'
+                    developerConnection = 'git@github.com:zebrunner/java-agent-junit5.git'
+                    url = 'https://github.com/zebrunner/java-agent-junit5'
+                }
+                issueManagement {
+                    system = 'GitHub'
+                    url = 'https://github.com/zebrunner/java-agent-junit5/issues'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = 'MavenCentral'
+            url = project.findProperty('publishing.maven.repo.url') ?: System.getenv('PUBLISHING_MAVEN_REPO_URL')
+            credentials {
+                username = project.findProperty('publishing.maven.username') ?: System.getenv('PUBLISHING_MAVEN_USER')
+                password = project.findProperty('publishing.maven.password') ?: System.getenv('PUBLISHING_MAVEN_PASSWORD')
+            }
+        }
+    }
+}
+
+signing {
+    def signingKey = project.findProperty('signing.key') ?: System.getenv('SIGNING_KEY')
+    def signingPassword = project.findProperty('signing.password') ?: System.getenv('SIGNING_PASSWORD')
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications.mavenJava
+}
