@@ -14,7 +14,7 @@ repositories {
         url "https://oss.sonatype.org/content/repositories/snapshots/"
     }
     maven {
-        url "https://nexus.zebrunner.dev/repository/maven-snapshots/"
+        url "https://nexus.zebrunner.dev/repository/ce-snapshots/"
     }
 }
 
