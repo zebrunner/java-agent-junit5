@@ -309,7 +309,7 @@ Maintainer username should be valid Zebrunner username, otherwise it will be set
 ## Contribution
 To check out the project and build from the source, do the following:
 ```
-git clone git://github.com/zebrunner/java-agent-testng.git
+git clone git://github.com/zebrunner/java-agent-junit5.git
 cd java-agent-testng
 ./gradlew build
 ```
