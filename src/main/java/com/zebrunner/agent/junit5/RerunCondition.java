@@ -1,7 +1,7 @@
-package com.zebrunner.agent.junit5.core;
+package com.zebrunner.agent.junit5;
 
 import com.zebrunner.agent.core.registrar.RerunContextHolder;
-import com.zebrunner.agent.core.rest.domain.TestDTO;
+import com.zebrunner.agent.core.registrar.domain.TestDTO;
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.ExtensionContext;

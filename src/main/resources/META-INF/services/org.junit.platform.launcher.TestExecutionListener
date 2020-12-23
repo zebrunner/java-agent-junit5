@@ -1,1 +1,1 @@
-com.zebrunner.agent.junit5.listener.TestRunListener
+com.zebrunner.agent.junit5.TestRunListener

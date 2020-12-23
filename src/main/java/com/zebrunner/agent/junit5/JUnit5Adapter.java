@@ -1,12 +1,11 @@
-package com.zebrunner.agent.junit5.adapter;
+package com.zebrunner.agent.junit5;
 
-import com.zebrunner.agent.core.registrar.Status;
-import com.zebrunner.agent.core.registrar.TestFinishDescriptor;
-import com.zebrunner.agent.core.registrar.TestRunFinishDescriptor;
 import com.zebrunner.agent.core.registrar.TestRunRegistrar;
-import com.zebrunner.agent.core.registrar.TestRunStartDescriptor;
-import com.zebrunner.agent.core.registrar.TestStartDescriptor;
-import com.zebrunner.agent.junit5.core.SegmentResolver;
+import com.zebrunner.agent.core.registrar.descriptor.Status;
+import com.zebrunner.agent.core.registrar.descriptor.TestFinishDescriptor;
+import com.zebrunner.agent.core.registrar.descriptor.TestRunFinishDescriptor;
+import com.zebrunner.agent.core.registrar.descriptor.TestRunStartDescriptor;
+import com.zebrunner.agent.core.registrar.descriptor.TestStartDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.MethodSource;
@@ -27,7 +26,7 @@ public class JUnit5Adapter {
 
     private static final String CLASS = "class";
 
-    private static final TestRunRegistrar registrar = TestRunRegistrar.registrar();
+    private static final TestRunRegistrar registrar = TestRunRegistrar.getInstance();
 
     public void registerRunStart(TestPlan testPlan) {
 //        System.out.println(Thread.currentThread().getName());
@@ -36,12 +35,12 @@ public class JUnit5Adapter {
         String name = "JUnit 5 test run from " + startedAt.toInstant() + " (UTC)";
         TestRunStartDescriptor testRunStartDescriptor = new TestRunStartDescriptor(name, "junit5", startedAt, name);
 
-        registrar.start(testRunStartDescriptor);
+        registrar.registerStart(testRunStartDescriptor);
     }
 
     public void registerRunFinish(TestPlan testPlan) {
         TestRunFinishDescriptor finishDescriptor = new TestRunFinishDescriptor(OffsetDateTime.now());
-        registrar.finish(finishDescriptor);
+        registrar.registerFinish(finishDescriptor);
     }
 
     public void registerTestStart(TestIdentifier testIdentifier) {
@@ -89,7 +88,7 @@ public class JUnit5Adapter {
                 e.printStackTrace();
             }
             TestStartDescriptor testStartDescriptor = new TestStartDescriptor(uuid, testName, startedAt, klass, method);
-            registrar.startTest(uuid, testStartDescriptor);
+            registrar.registerTestStart(uuid, testStartDescriptor);
         }
     }
 
@@ -128,7 +127,7 @@ public class JUnit5Adapter {
             }
 
             TestFinishDescriptor testFinishDescriptor = new TestFinishDescriptor(resultStatus, endedAt, message);
-            registrar.finishTest(uuid, testFinishDescriptor);
+            registrar.registerTestFinish(uuid, testFinishDescriptor);
         }
     }
 
@@ -148,7 +147,7 @@ public class JUnit5Adapter {
             TestFinishDescriptor result = new TestFinishDescriptor(Status.SKIPPED, endedAt, reason);
 
             // TODO: 3/24/20 prevent test finish registration if test is disabled 
-            registrar.finishTest(testIdentifier.getUniqueId(), result);
+            registrar.registerTestFinish(testIdentifier.getUniqueId(), result);
         }
     }
 
@@ -156,7 +155,8 @@ public class JUnit5Adapter {
         String testName = testIdentifier.getDisplayName();
         if (hasManyInvocations) {
             testName = testIdentifier.getLegacyReportingName();
-        } else if (testIdentifier.getDisplayName().equals(testIdentifier.getLegacyReportingName()) && testIdentifier.getSource().isPresent()) {
+        } else if (testIdentifier.getDisplayName().equals(testIdentifier.getLegacyReportingName())
+                && testIdentifier.getSource().isPresent()) {
             testName = ((MethodSource) testIdentifier.getSource().get()).getMethodName();
         }
         return testName;
