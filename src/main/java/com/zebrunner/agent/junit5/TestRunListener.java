@@ -1,6 +1,5 @@
-package com.zebrunner.agent.junit5.listener;
+package com.zebrunner.agent.junit5;
 
-import com.zebrunner.agent.junit5.adapter.JUnit5Adapter;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;

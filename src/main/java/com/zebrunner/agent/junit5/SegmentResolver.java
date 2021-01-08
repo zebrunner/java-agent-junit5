@@ -1,4 +1,4 @@
-package com.zebrunner.agent.junit5.core;
+package com.zebrunner.agent.junit5;
 
 import org.junit.platform.engine.UniqueId;
 
