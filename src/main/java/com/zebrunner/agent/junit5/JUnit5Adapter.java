@@ -45,7 +45,7 @@ public class JUnit5Adapter {
 
     public void registerTestStart(TestIdentifier testIdentifier) {
         if (testIdentifier.isTest()) {
-            OffsetDateTime startedAt = OffsetDateTime.now();
+
             String uuid = testIdentifier.getUniqueId();
             List<UniqueId.Segment> idSegments = UniqueId.parse(uuid).getSegments();
             MethodSource source = (MethodSource) testIdentifier.getSource().get(); // additional validation here?
@@ -53,6 +53,10 @@ public class JUnit5Adapter {
             boolean parameterized = SegmentResolver.isParameterizedTest(idSegments);
             String testName = buildTestName(testIdentifier, dynamic || parameterized);
 
+/*
+* TODO: should this commented out code be deleted?
+*  If this is some form of comment, should it be javadoc?
+*/
 //            test.setUuid(uuid);
 //            test.setName(testName);
 //            test.setClassName(source.getClassName());
@@ -87,7 +91,9 @@ public class JUnit5Adapter {
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }
-            TestStartDescriptor testStartDescriptor = new TestStartDescriptor(uuid, testName, startedAt, klass, method);
+
+            //TODO: is there a way to get argumentsIndex? or should it be <code>null</code> in this context?
+            TestStartDescriptor testStartDescriptor = new TestStartDescriptor(uuid, testName, klass, method, null);
             registrar.registerTestStart(uuid, testStartDescriptor);
         }
     }

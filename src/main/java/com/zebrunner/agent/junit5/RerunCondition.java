@@ -55,7 +55,9 @@ public class RerunCondition implements ExecutionCondition {
 
     private static Predicate<TestDTO> dynamicTestNeedRerun(ExtensionContext context) {
         return test -> {
-            List<UniqueId.Segment> testUuidSegments = UniqueId.parse(test.getUuid()).getSegments();
+
+            //TODO: is correlationData a valid comparison for unique id segments in this context?
+            List<UniqueId.Segment> testUuidSegments = UniqueId.parse(test.getCorrelationData()).getSegments();
             boolean isDynamic = SegmentResolver.isDynamic(testUuidSegments);
             return isDynamic
                     && test.getClassName().equals(context.getRequiredTestClass().getName())
@@ -64,7 +66,8 @@ public class RerunCondition implements ExecutionCondition {
     }
 
     private static Predicate<TestDTO> plainTestNeedRerun(ExtensionContext context) {
-        return test -> context.getUniqueId().equals(test.getUuid());
+        //TODO: is correlationData a valid comparison for unique id in this context?
+        return test -> context.getUniqueId().equals(test.getCorrelationData());
     }
 
     private static boolean isMethodContext(ExtensionContext context) {
