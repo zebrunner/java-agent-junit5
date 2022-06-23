@@ -46,17 +46,13 @@ public class JUnit5Adapter {
     public void registerTestStart(TestIdentifier testIdentifier) {
         if (testIdentifier.isTest()) {
 
-            String uuid = testIdentifier.getUniqueId();
-            List<UniqueId.Segment> idSegments = UniqueId.parse(uuid).getSegments();
+            String correlationData = testIdentifier.getUniqueId();
+            List<UniqueId.Segment> correlationDataSegments = UniqueId.parse(correlationData).getSegments();
             MethodSource source = (MethodSource) testIdentifier.getSource().get(); // additional validation here?
-            boolean dynamic = SegmentResolver.isDynamic(idSegments);
-            boolean parameterized = SegmentResolver.isParameterizedTest(idSegments);
+            boolean dynamic = SegmentResolver.isDynamic(correlationDataSegments);
+            boolean parameterized = SegmentResolver.isParameterizedTest(correlationDataSegments);
             String testName = buildTestName(testIdentifier, dynamic || parameterized);
 
-/*
-* TODO: should this commented out code be deleted?
-*  If this is some form of comment, should it be javadoc?
-*/
 //            test.setUuid(uuid);
 //            test.setName(testName);
 //            test.setClassName(source.getClassName());
@@ -91,10 +87,8 @@ public class JUnit5Adapter {
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }
-
-            //TODO: is there a way to get argumentsIndex? or should it be <code>null</code> in this context?
-            TestStartDescriptor testStartDescriptor = new TestStartDescriptor(uuid, testName, klass, method, null);
-            registrar.registerTestStart(uuid, testStartDescriptor);
+            TestStartDescriptor testStartDescriptor = new TestStartDescriptor(correlationData, testName, klass, method, null);
+            registrar.registerTestStart(correlationData, testStartDescriptor);
         }
     }
 
