@@ -45,12 +45,12 @@ public class JUnit5Adapter {
 
     public void registerTestStart(TestIdentifier testIdentifier) {
         if (testIdentifier.isTest()) {
-            OffsetDateTime startedAt = OffsetDateTime.now();
-            String uuid = testIdentifier.getUniqueId();
-            List<UniqueId.Segment> idSegments = UniqueId.parse(uuid).getSegments();
+
+            String correlationData = testIdentifier.getUniqueId();
+            List<UniqueId.Segment> correlationDataSegments = UniqueId.parse(correlationData).getSegments();
             MethodSource source = (MethodSource) testIdentifier.getSource().get(); // additional validation here?
-            boolean dynamic = SegmentResolver.isDynamic(idSegments);
-            boolean parameterized = SegmentResolver.isParameterizedTest(idSegments);
+            boolean dynamic = SegmentResolver.isDynamic(correlationDataSegments);
+            boolean parameterized = SegmentResolver.isParameterizedTest(correlationDataSegments);
             String testName = buildTestName(testIdentifier, dynamic || parameterized);
 
 //            test.setUuid(uuid);
@@ -87,8 +87,8 @@ public class JUnit5Adapter {
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }
-            TestStartDescriptor testStartDescriptor = new TestStartDescriptor(uuid, testName, startedAt, klass, method);
-            registrar.registerTestStart(uuid, testStartDescriptor);
+            TestStartDescriptor testStartDescriptor = new TestStartDescriptor(correlationData, testName, klass, method, null);
+            registrar.registerTestStart(correlationData, testStartDescriptor);
         }
     }
 
