@@ -8,7 +8,6 @@ version = "${version != 'unspecified' ? version : '1.0-SNAPSHOT'}"
 ext.coreVersion = project.properties['core.version'] ?: '1.0.0'
 
 repositories {
-    jcenter()
     mavenCentral()
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots/"
@@ -21,9 +20,13 @@ repositories {
 dependencies {
     api("com.zebrunner:agent-core:${coreVersion}")
 
-    implementation("org.junit.jupiter:junit-jupiter-api:5.6.1")
-    implementation("org.junit.jupiter:junit-jupiter-engine:5.6.1")
-    implementation("org.junit.platform:junit-platform-launcher:1.5.2")
+    implementation('org.slf4j:slf4j-api:1.7.36')
+
+    implementation('com.google.code.gson:gson:2.9.0')
+
+    implementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    implementation("org.junit.jupiter:junit-jupiter-engine:5.9.2")
+    implementation("org.junit.platform:junit-platform-launcher:1.9.2")
 
     annotationProcessor("org.projectlombok:lombok:1.18.10")
     compileOnly("org.projectlombok:lombok:1.18.10")
